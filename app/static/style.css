@@ -49,13 +49,29 @@ button:disabled {
 
 input,
 select {
+  box-sizing: border-box;
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
   min-height: 42px;
   padding: 0.6rem 0.75rem;
   border: 1px solid #d5dfd9;
   border-radius: 9px;
   color: #17231f;
   background: #fff;
+  font-size: 16px;
+}
+
+input[type="date"] {
+  display: block;
+  min-height: 44px;
+  text-align: left;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+input[type="date"]::-webkit-date-and-time-value {
+  text-align: left;
 }
 
 input:focus,
@@ -121,6 +137,7 @@ h3 {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  min-width: 0;
   margin-bottom: 1rem;
 }
 
@@ -137,11 +154,13 @@ h3 {
 
 .report-filters {
   flex-wrap: wrap;
+  min-width: 0;
 }
 
 .report-filters label {
   display: grid;
   flex: 1 1 130px;
+  min-width: 0;
   gap: 0.4rem;
   color: #52635b;
   font-size: 0.83rem;
@@ -342,5 +361,20 @@ tbody tr:last-child td {
   th,
   td {
     padding: 0.65rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .report-filters {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .report-filters label,
+  .report-filters .employee-filter,
+  .report-filters > button {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
   }
 }
