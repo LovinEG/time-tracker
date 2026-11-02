@@ -277,6 +277,16 @@ tbody tr:last-child td {
   background: #fff0ee;
 }
 
+.demo-banner {
+  margin-bottom: 1rem;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid #c9dfd1;
+  border-radius: 9px;
+  color: #285d43;
+  background: #eaf5ee;
+  font-size: 0.85rem;
+}
+
 .error-area[hidden],
 [hidden] {
   display: none !important;

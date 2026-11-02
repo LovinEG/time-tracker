@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, timezone
 import pytest
 from fastapi.testclient import TestClient
 
-from app import main, repository
+from app import main, repository, seed
 from app.db import get_connection
 
 
@@ -30,6 +30,7 @@ def clock(monkeypatch):
     fake_clock = FakeClock()
     monkeypatch.setattr(main, "utc_now", fake_clock.now)
     monkeypatch.setattr(repository, "utc_now", fake_clock.now)
+    monkeypatch.setattr(seed, "utc_now", fake_clock.now)
     return fake_clock
 
 

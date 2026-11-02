@@ -1,4 +1,5 @@
 from contextlib import asynccontextmanager
+import os
 import sqlite3
 from collections.abc import Iterator
 from datetime import date
@@ -20,6 +21,7 @@ from app.schemas import (
     TimerEntryResponse,
     TimerStart,
 )
+from app.seed import seed_demo_data
 from app.time_utils import utc_now
 
 
@@ -27,6 +29,12 @@ from app.time_utils import utc_now
 async def lifespan(app: FastAPI):
     """Initialize the database before serving requests."""
     init_db()
+    if os.environ.get("DEMO_MODE") == "1":
+        connection = get_connection()
+        try:
+            seed_demo_data(connection)
+        finally:
+            connection.close()
     yield
 
 
@@ -64,6 +72,12 @@ def validate_period(date_from: date, date_to: date) -> None:
 def health() -> dict[str, str]:
     """Report that the API is available."""
     return {"status": "ok"}
+
+
+@app.get("/api/config")
+def config() -> dict[str, bool]:
+    """Return public runtime configuration for the client."""
+    return {"demo_mode": os.environ.get("DEMO_MODE") == "1"}
 
 
 @app.post("/api/employees", response_model=EmployeeResponse, status_code=201)

@@ -21,6 +21,7 @@ const summaryBody = document.querySelector("#summary-body");
 const entriesBody = document.querySelector("#entries-body");
 const entriesEmpty = document.querySelector("#entries-empty");
 const entriesTableWrap = document.querySelector("#entries-table-wrap");
+const demoBanner = document.querySelector("#demo-banner");
 
 reportForm.noValidate = true;
 
@@ -331,6 +332,12 @@ employeeFilter.addEventListener("change", async () => {
 
 async function initialize() {
   setDefaultPeriod();
+  try {
+    const config = await api("/api/config");
+    demoBanner.hidden = !config.demo_mode;
+  } catch (error) {
+    showError(error);
+  }
   try {
     await loadEmployees();
     await loadReport();
