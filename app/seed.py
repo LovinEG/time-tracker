@@ -30,11 +30,15 @@ def seed_demo_data(connection: sqlite3.Connection) -> None:
     )
     for name, days_ago, duration_minutes, description in demo_entries:
         started_at = now - timedelta(days=days_ago, hours=5)
-        entry = repository.start_timer(
-            connection, employees[name], description, started_at
-        )
+        repository.start_timer(connection, employees[name], description, started_at)
         repository.stop_timer(
             connection,
             employees[name],
             started_at + timedelta(minutes=duration_minutes),
         )
+    repository.start_timer(
+        connection,
+        employees["Иван Петров"],
+        "Код-ревью задачи учёта времени",
+        now - timedelta(minutes=25),
+    )

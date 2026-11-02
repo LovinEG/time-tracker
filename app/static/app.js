@@ -94,12 +94,16 @@ function dateInputValue(date) {
   return `${year}-${month}-${day}`;
 }
 
-function setDefaultPeriod() {
+function setDefaultPeriod(demoMode) {
   const today = new Date();
-  const monday = new Date(today);
-  const daysSinceMonday = (today.getDay() + 6) % 7;
-  monday.setDate(today.getDate() - daysSinceMonday);
-  dateFromInput.value = dateInputValue(monday);
+  const start = new Date(today);
+  if (demoMode) {
+    start.setDate(today.getDate() - 6);
+  } else {
+    const daysSinceMonday = (today.getDay() + 6) % 7;
+    start.setDate(today.getDate() - daysSinceMonday);
+  }
+  dateFromInput.value = dateInputValue(start);
   dateToInput.value = dateInputValue(today);
 }
 
@@ -331,13 +335,15 @@ employeeFilter.addEventListener("change", async () => {
 });
 
 async function initialize() {
-  setDefaultPeriod();
+  let demoMode = false;
   try {
     const config = await api("/api/config");
-    demoBanner.hidden = !config.demo_mode;
+    demoMode = config.demo_mode;
+    demoBanner.hidden = !demoMode;
   } catch (error) {
     showError(error);
   }
+  setDefaultPeriod(demoMode);
   try {
     await loadEmployees();
     await loadReport();

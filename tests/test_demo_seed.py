@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from fastapi.testclient import TestClient
 
 from app import main
@@ -28,6 +30,37 @@ def test_seed_populates_empty_database_with_oleg_without_entries(client, clock):
     assert employee_count == 3
     assert entries_by_name["Олег Кузнецов"] == 0
     assert 6 <= sum(entries_by_name.values()) <= 8
+
+
+def test_seed_has_one_running_ivan_timer_and_recent_finished_entries(client, clock):
+    connection = get_connection()
+    try:
+        seed_demo_data(connection)
+        running = connection.execute(
+            """
+            SELECT employees.name, count(time_entries.id) AS running_count
+            FROM employees
+            JOIN time_entries ON time_entries.employee_id = employees.id
+            WHERE time_entries.ended_at IS NULL
+            GROUP BY employees.id
+            """
+        ).fetchall()
+        finished_starts = [
+            datetime.fromisoformat(row[0])
+            for row in connection.execute(
+                "SELECT started_at FROM time_entries WHERE ended_at IS NOT NULL"
+            ).fetchall()
+        ]
+    finally:
+        connection.close()
+
+    lower_bound = clock.now() - timedelta(days=7)
+    assert [(row["name"], row["running_count"]) for row in running] == [
+        ("Иван Петров", 1)
+    ]
+    assert all(
+        lower_bound <= started_at <= clock.now() for started_at in finished_starts
+    )
 
 
 def test_seed_is_idempotent_and_does_nothing_with_existing_employee(client, clock):
